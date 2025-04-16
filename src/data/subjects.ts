@@ -1,6 +1,6 @@
 import { Subject, SubjectsByBoard } from '../types';
 
-export const venues = {
+export const centreNumbers = {
   Cambridge: 'CN399',
   Edexcel: '91829'
 };

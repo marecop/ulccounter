@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ExamInfo } from '@/types';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { ExamInfo, Teacher } from '@/types';
 
 interface TimerProps {
   examInfo: ExamInfo;
+  onEdit: () => void;
 }
 
 interface TimeLeft {
@@ -12,19 +13,26 @@ interface TimeLeft {
   seconds: number;
 }
 
-export default function Timer({ examInfo }: TimerProps) {
+interface ReportEvent {
+  time: string;
+  description: string;
+}
+
+export default function Timer({ examInfo, onEdit }: TimerProps) {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [isWarning, setIsWarning] = useState(false);
   const [isExamStarted, setIsExamStarted] = useState(false);
   const [isExamEnded, setIsExamEnded] = useState(false);
-
-  // 將24小時格式轉換為12小時格式
-  const formatTimeTo12Hour = (time24: string): string => {
-    const [hours24, minutes] = time24.split(':').map(Number);
-    const period = hours24 >= 12 ? 'P.M.' : 'A.M.';
-    const hours12 = hours24 % 12 || 12;
-    return `${hours12}:${minutes.toString().padStart(2, '0')} ${period}`;
-  };
+  const [events, setEvents] = useState<ReportEvent[]>([]);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportDescription, setReportDescription] = useState('');
+  const [showEvents, setShowEvents] = useState(false);
+  
+  // 用於播放音頻的參考
+  const audioRef = useRef<HTMLAudioElement>(null);
+  
+  // 追蹤是否已經播放了警告聲音
+  const warningPlayedRef = useRef(false);
 
   const calculateTimeLeft = useCallback(() => {
     const now = new Date();
@@ -57,6 +65,12 @@ export default function Timer({ examInfo }: TimerProps) {
       // Set warning when less than 5 minutes remain
       if (difference <= 5 * 60 * 1000) {
         setIsWarning(true);
+        
+        // 播放提示音（僅一次）
+        if (!warningPlayedRef.current && audioRef.current) {
+          audioRef.current.play().catch(err => console.error("Error playing audio:", err));
+          warningPlayedRef.current = true;
+        }
       }
     }
     
@@ -81,6 +95,11 @@ export default function Timer({ examInfo }: TimerProps) {
     // Clear interval on component unmount
     return () => clearInterval(timer);
   }, [calculateTimeLeft]);
+  
+  // 重置警告聲音標記當考試信息發生變化時
+  useEffect(() => {
+    warningPlayedRef.current = false;
+  }, [examInfo]);
 
   const formatNumber = (num: number): string => {
     return num < 10 ? `0${num}` : `${num}`;
@@ -97,10 +116,58 @@ export default function Timer({ examInfo }: TimerProps) {
     
     return "Time until exam starts";
   };
+  
+  const formatDate = (date: Date): string => {
+    const options: Intl.DateTimeFormatOptions = {
+      weekday: 'long',
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit'
+    };
+    return date.toLocaleDateString('en-GB', options);
+  };
+  
+  const addEvent = () => {
+    if (reportDescription.trim() === '') return;
+    
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('en-GB');
+    
+    const newEvent: ReportEvent = {
+      time: timeString,
+      description: reportDescription.trim()
+    };
+    
+    setEvents([...events, newEvent]);
+    setReportDescription('');
+    setShowReportModal(false);
+  };
 
   return (
     <div className={`p-6 rounded-lg shadow-lg ${isWarning ? 'bg-red-100 animate-pulse-fast' : 'bg-white'}`}>
-      <h2 className="text-2xl font-bold mb-4 text-center text-ulc-blue">{getTimerMessage()}</h2>
+      {/* 柔和提示音 */}
+      <audio ref={audioRef} preload="auto">
+        <source src="/notification.mp3" type="audio/mpeg" />
+        Your browser does not support the audio element.
+      </audio>
+      
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-ulc-blue">{getTimerMessage()}</h2>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => setShowReportModal(true)}
+            className="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600"
+          >
+            Report
+          </button>
+          <button 
+            onClick={onEdit}
+            className="px-3 py-1 bg-ulc-blue text-white rounded hover:bg-blue-700"
+          >
+            Edit
+          </button>
+        </div>
+      </div>
       
       <div className="grid grid-cols-4 gap-4 text-center mb-6">
         <div className="flex flex-col">
@@ -127,7 +194,7 @@ export default function Timer({ examInfo }: TimerProps) {
         </div>
       )}
       
-      <div className="bg-gray-100 p-4 rounded-md">
+      <div className="bg-gray-100 p-4 rounded-md mb-4">
         <h3 className="font-bold text-lg mb-2 text-ulc-blue">Exam Details</h3>
         <div className="grid grid-cols-2 gap-2">
           <div className="text-gray-600">Exam Board:</div>
@@ -136,21 +203,125 @@ export default function Timer({ examInfo }: TimerProps) {
           <div className="text-gray-600">Subject:</div>
           <div className="text-black font-medium">{examInfo.subject.name}</div>
           
-          <div className="text-gray-600">Subject Code:</div>
+          <div className="text-gray-600">Subject Component:</div>
           <div className="text-black font-medium">{examInfo.subject.code}</div>
           
-          <div className="text-gray-600">Venue:</div>
+          <div className="text-gray-600">Centre Number:</div>
           <div className="text-black font-medium">{examInfo.venue}</div>
-          
-          <div className="text-gray-600">Date:</div>
-          <div className="text-black font-medium">{examInfo.date.toLocaleDateString()}</div>
           
           <div className="text-gray-600">Time:</div>
           <div className="text-black font-medium">
-            {formatTimeTo12Hour(examInfo.startTime)} - {formatTimeTo12Hour(examInfo.endTime)}
+            {examInfo.startTime} - {examInfo.endTime}
           </div>
         </div>
       </div>
+
+      {/* Other Details section - 現在默認顯示 */}
+      <div className="bg-gray-100 p-4 rounded-md mt-4">
+        <h3 className="font-bold text-lg mb-2 text-ulc-blue">Other Details</h3>
+        
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          {examInfo.todayDate && (
+            <>
+              <div className="text-gray-600">Date today:</div>
+              <div className="text-black font-medium">
+                {formatDate(examInfo.todayDate)}
+              </div>
+            </>
+          )}
+          
+          <div className="text-gray-600">Classroom:</div>
+          <div className="text-black font-medium">{examInfo.classroom || "Not specified"}</div>
+        </div>
+        
+        {examInfo.teachers && examInfo.teachers.length > 0 && (
+          <div className="mb-3">
+            <div className="text-gray-600 mb-2">Teachers on duty:</div>
+            <div className="pl-4 space-y-1">
+              {examInfo.teachers.map((teacher, index) => (
+                <div key={index} className="grid grid-cols-2 gap-2">
+                  <div className="text-black font-medium">{teacher.name || "Name not provided"}</div>
+                  <div className="text-black">{teacher.time || "Time not specified"}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {examInfo.attendanceFile && (
+          <div>
+            <div className="text-gray-600 mb-2">Attendance:</div>
+            <div className="text-black">
+              Uploaded: {examInfo.attendanceFile.name}
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {/* 事件記錄按鈕 */}
+      {events.length > 0 && (
+        <div className="mt-4">
+          <button
+            type="button"
+            className="flex items-center text-ulc-blue hover:text-blue-800 font-medium"
+            onClick={() => setShowEvents(!showEvents)}
+          >
+            <svg 
+              className={`w-5 h-5 mr-2 transition-transform ${showEvents ? 'transform rotate-180' : ''}`} 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24" 
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+            {showEvents ? 'Hide Events' : 'Show Recorded Events'}
+          </button>
+          
+          {showEvents && (
+            <div className="bg-gray-100 p-4 rounded-md mt-2">
+              <h3 className="font-bold text-lg mb-2 text-ulc-blue">Event Log</h3>
+              <div className="space-y-2">
+                {events.map((event, index) => (
+                  <div key={index} className="border-b pb-2">
+                    <div className="text-gray-600">{event.time}</div>
+                    <div className="text-black">{event.description}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+      
+      {/* Report Modal */}
+      {showReportModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg max-w-lg w-full">
+            <h3 className="text-xl font-bold mb-4 text-ulc-blue">Report an Event</h3>
+            <textarea
+              value={reportDescription}
+              onChange={(e) => setReportDescription(e.target.value)}
+              className="w-full h-32 p-2 border rounded mb-4"
+              placeholder="Describe what happened..."
+            ></textarea>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowReportModal(false)}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={addEvent}
+                className="px-4 py-2 bg-ulc-blue text-white rounded hover:bg-blue-700"
+              >
+                Save Report
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 

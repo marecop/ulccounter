@@ -55,3 +55,15 @@ The timer will automatically switch from counting down to the exam start time to
 ## License
 
 MIT 
+
+## 通知音效
+
+本應用需要一個通知音效文件，用於在考試最後五分鐘提醒用戶。
+
+請將名為 `notification.mp3` 的音效文件放入 `public` 目錄中。您可以從以下網站獲取免費通知音效：
+
+1. [Pixabay](https://pixabay.com/sound-effects/search/notification/)
+2. [Freesound](https://freesound.org/search/?q=notification)
+3. [Zapsplat](https://www.zapsplat.com/sound-effect-category/notifications-alerts-and-prompts/)
+
+音效文件需保存為 MP3 格式，並命名為 `notification.mp3`。 

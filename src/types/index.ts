@@ -15,6 +15,11 @@ export interface ExamVenue {
   code: string;
 }
 
+export interface Teacher {
+  name: string;
+  time: string;
+}
+
 export interface ExamInfo {
   board: ExamBoard;
   subject: Subject;
@@ -22,4 +27,8 @@ export interface ExamInfo {
   startTime: string;
   endTime: string;
   venue: string;
+  classroom?: string;
+  teachers?: Teacher[];
+  todayDate?: Date;
+  attendanceFile?: File | null;
 } 

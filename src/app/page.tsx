@@ -8,9 +8,15 @@ import Image from 'next/image';
 
 export default function Home() {
   const [examInfo, setExamInfo] = useState<ExamInfo | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
 
   const handleExamSubmit = (info: ExamInfo) => {
     setExamInfo(info);
+    setIsEditing(false);
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
   };
 
   return (
@@ -29,9 +35,9 @@ export default function Home() {
         <p className="text-gray-600">Set up your exam details and keep track of time</p>
       </header>
 
-      {examInfo ? (
+      {examInfo && !isEditing ? (
         <div className="mb-6">
-          <Timer examInfo={examInfo} />
+          <Timer examInfo={examInfo} onEdit={handleEdit} />
           <div className="mt-6 text-center">
             <button
               onClick={() => setExamInfo(null)}
@@ -42,7 +48,10 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <ExamForm onSubmit={handleExamSubmit} />
+        <ExamForm 
+          onSubmit={handleExamSubmit} 
+          initialData={isEditing ? examInfo : undefined}
+        />
       )}
       
       <footer className="mt-12 text-center text-gray-500 text-sm">
