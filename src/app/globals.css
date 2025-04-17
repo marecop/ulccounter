@@ -35,4 +35,30 @@ body {
   .select {
     @apply px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-ulc-blue focus:border-ulc-blue;
   }
+}
+
+@keyframes pulse-fast {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+.animate-pulse-fast {
+  animation: pulse-fast 1s ease-in-out infinite;
+}
+
+.animate-bounce {
+  animation: bounce 2s infinite;
 } 

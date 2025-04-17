@@ -59,6 +59,13 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
       // If the exam has ended
       if (difference <= 0) {
         setIsExamEnded(true);
+        
+        // 如果考試剛剛結束，播放提示音
+        if (!warningPlayedRef.current && audioRef.current) {
+          audioRef.current.play().catch(err => console.error("Error playing audio:", err));
+          warningPlayedRef.current = true;
+        }
+        
         return { days: 0, hours: 0, minutes: 0, seconds: 0 };
       }
       
@@ -70,6 +77,15 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
         if (!warningPlayedRef.current && audioRef.current) {
           audioRef.current.play().catch(err => console.error("Error playing audio:", err));
           warningPlayedRef.current = true;
+          
+          // 自動添加五分鐘警告事件
+          const now = new Date();
+          const timeString = now.toLocaleTimeString('en-GB');
+          const warningEvent: ReportEvent = {
+            time: timeString,
+            description: "系統警告：考試剩餘時間不足 5 分鐘！"
+          };
+          setEvents(prev => [...prev, warningEvent]);
         }
       }
     }
@@ -81,7 +97,7 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
     const seconds = Math.floor((difference % (1000 * 60)) / 1000);
     
     return { days, hours, minutes, seconds };
-  }, [examInfo.date, examInfo.startTime, examInfo.endTime]);
+  }, [examInfo.date, examInfo.startTime, examInfo.endTime, setEvents]);
 
   useEffect(() => {
     // Update time immediately
@@ -152,7 +168,7 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
       </audio>
       
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold text-ulc-blue">{getTimerMessage()}</h2>
+        <h2 className={`text-2xl font-bold ${isExamEnded ? 'text-red-600 text-4xl animate-bounce' : 'text-ulc-blue'}`}>{getTimerMessage()}</h2>
         <div className="flex gap-2">
           <button 
             onClick={() => setShowReportModal(true)}
@@ -169,28 +185,34 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
         </div>
       </div>
       
-      <div className="grid grid-cols-4 gap-4 text-center mb-6">
-        <div className="flex flex-col">
-          <div className="text-4xl font-bold text-ulc-blue">{formatNumber(timeLeft.days)}</div>
-          <div className="text-gray-600">Days</div>
+      {isExamEnded ? (
+        <div className="p-8 bg-red-50 rounded-lg border-2 border-red-500 text-center mb-6 animate-pulse">
+          <span className="text-4xl font-bold text-red-600">考試已結束</span>
         </div>
-        <div className="flex flex-col">
-          <div className="text-4xl font-bold text-ulc-blue">{formatNumber(timeLeft.hours)}</div>
-          <div className="text-gray-600">Hours</div>
+      ) : (
+        <div className="grid grid-cols-4 gap-4 text-center mb-6">
+          <div className="flex flex-col">
+            <div className="text-4xl font-bold text-ulc-blue">{formatNumber(timeLeft.days)}</div>
+            <div className="text-gray-600">Days</div>
+          </div>
+          <div className="flex flex-col">
+            <div className="text-4xl font-bold text-ulc-blue">{formatNumber(timeLeft.hours)}</div>
+            <div className="text-gray-600">Hours</div>
+          </div>
+          <div className="flex flex-col">
+            <div className="text-4xl font-bold text-ulc-blue">{formatNumber(timeLeft.minutes)}</div>
+            <div className="text-gray-600">Minutes</div>
+          </div>
+          <div className="flex flex-col">
+            <div className="text-4xl font-bold text-ulc-blue">{formatNumber(timeLeft.seconds)}</div>
+            <div className="text-gray-600">Seconds</div>
+          </div>
         </div>
-        <div className="flex flex-col">
-          <div className="text-4xl font-bold text-ulc-blue">{formatNumber(timeLeft.minutes)}</div>
-          <div className="text-gray-600">Minutes</div>
-        </div>
-        <div className="flex flex-col">
-          <div className="text-4xl font-bold text-ulc-blue">{formatNumber(timeLeft.seconds)}</div>
-          <div className="text-gray-600">Seconds</div>
-        </div>
-      </div>
+      )}
       
       {isWarning && !isExamEnded && (
-        <div className="p-4 bg-red-500 text-white text-center rounded-md font-bold mb-4">
-          Less than 5 minutes remaining!
+        <div className="p-4 bg-red-500 text-white text-center rounded-md font-bold mb-4 animate-pulse">
+          <span className="text-xl">倒計時不足 5 分鐘！</span>
         </div>
       )}
       
