@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { ExamInfo, Teacher } from '@/types';
+import DatePicker from 'react-datepicker';
+import TimePicker from 'react-time-picker';
+import 'react-datepicker/dist/react-datepicker.css';
+import 'react-time-picker/dist/TimePicker.css';
+import 'react-clock/dist/Clock.css';
 
 interface TimerProps {
   examInfo: ExamInfo;
@@ -212,7 +217,7 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
       
       {isWarning && !isExamEnded && (
         <div className="p-4 bg-red-500 text-white text-center rounded-md font-bold mb-4 animate-pulse">
-          <span className="text-xl">倒計時不足 5 分鐘！</span>
+          <span className="text-xl">The exam is under five minutes remaining.</span>
         </div>
       )}
       
