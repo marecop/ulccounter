@@ -22,14 +22,22 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
   
   // 額外設置
   const [classroom, setClassroom] = useState(initialData?.classroom || '');
+  const [customClassroomValue, setCustomClassroomValue] = useState('');
   const [teachers, setTeachers] = useState<Teacher[]>(
     initialData?.teachers?.length ? initialData.teachers : [{ name: '', time: '' }]
   );
-  const [todayDate, setTodayDate] = useState<Date>(initialData?.todayDate || new Date());
   const [attendanceFile, setAttendanceFile] = useState<File | null>(initialData?.attendanceFile || null);
   
   // 教室選項
   const [classrooms] = useState<string[]>([]);
+  
+  // 初始化自定義教室值（如果來自初始數據）
+  useEffect(() => {
+    if (initialData?.classroom && !classrooms.includes(initialData.classroom)) {
+      setCustomClassroomValue(initialData.classroom);
+      setClassroom('custom');
+    }
+  }, [initialData, classrooms]);
 
   const handleBoardChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newBoard = e.target.value as ExamBoard;
@@ -92,9 +100,9 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
       endTime,
       venue: customVenue || centreNumbers[board],
       // 增加額外設置
-      classroom,
+      classroom: classroom === 'custom' ? customClassroomValue : classroom,
       teachers,
-      todayDate,
+      todayDate: new Date(), // 自動使用當前日期
       attendanceFile
     });
   };
@@ -115,7 +123,7 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
               onChange={handleBoardChange}
               className="select w-full text-black font-medium"
             >
-              <option value="Cambridge">Cambridge (CAIE)</option>
+              <option value="Cambridge">Cambridge (CIE)</option>
               <option value="Edexcel">Edexcel</option>
             </select>
           </div>
@@ -248,20 +256,6 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
             <h3 className="text-lg font-medium mb-4 text-ulc-blue">Other details</h3>
             
             <div className="grid gap-4">
-              <div>
-                <label className="block text-gray-700 mb-2" htmlFor="today-date">
-                  Date today
-                </label>
-                <DatePicker
-                  id="today-date"
-                  selected={todayDate}
-                  onChange={(date: Date) => setTodayDate(date)}
-                  className="input w-full text-black font-medium"
-                  dateFormat="EEEE, MMMM d, yyyy"
-                  calendarClassName="bg-white shadow-lg rounded-md p-2"
-                />
-              </div>
-
               <div className="space-y-4">
                 <label className="block text-gray-700">
                   Teacher-on-duty
@@ -317,26 +311,40 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
                 <label className="block text-gray-700 mb-2" htmlFor="classroom">
                   Classroom
                 </label>
-                <select
-                  id="classroom"
-                  value={classroom}
-                  onChange={(e) => setClassroom(e.target.value)}
-                  className="select w-full text-black font-medium"
-                >
-                  <option value="">Select a classroom</option>
-                  {classrooms.map((room, index) => (
-                    <option key={index} value={room}>{room}</option>
-                  ))}
-                  <option value="custom">Custom...</option>
-                </select>
-                {classroom === 'custom' && (
-                  <input
-                    type="text"
-                    value=""
+                {classroom === 'custom' ? (
+                  <div className="space-y-2">
+                    <input
+                      type="text"
+                      id="custom-classroom"
+                      value={customClassroomValue}
+                      onChange={(e) => setCustomClassroomValue(e.target.value)}
+                      className="input w-full text-black font-medium"
+                      placeholder="Enter classroom (e.g. Room 101)"
+                      autoFocus
+                    />
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setClassroom('')}
+                        className="text-sm text-gray-500 hover:text-ulc-blue"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <select
+                    id="classroom"
+                    value={classroom}
                     onChange={(e) => setClassroom(e.target.value)}
-                    className="input w-full mt-2 text-black font-medium"
-                    placeholder="Enter classroom (e.g. Room 101)"
-                  />
+                    className="select w-full text-black font-medium"
+                  >
+                    <option value="">Select a classroom</option>
+                    {classrooms.map((room, index) => (
+                      <option key={index} value={room}>{room}</option>
+                    ))}
+                    <option value="custom">Custom...</option>
+                  </select>
                 )}
               </div>
 
