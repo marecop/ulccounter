@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
+import TimePicker from 'react-time-picker';
 import 'react-datepicker/dist/react-datepicker.css';
+import 'react-time-picker/dist/TimePicker.css';
+import 'react-clock/dist/Clock.css';
 import { ExamBoard, ExamInfo, Subject, Teacher } from '@/types';
 import { subjects, centreNumbers } from '@/data/subjects';
 
@@ -52,7 +55,13 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
     }
   };
 
-  const handleTimeChange = (setter: React.Dispatch<React.SetStateAction<string>>, value: string) => {
+  const handleTimeChange = (setter: React.Dispatch<React.SetStateAction<string>>, value: string | null) => {
+    // 如果值為 null，則使用默認值
+    if (value === null) {
+      setter('09:00');
+      return;
+    }
+    
     // 直接設置值，允許用戶輸入
     setter(value);
     
@@ -203,15 +212,15 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
             <label className="block text-gray-700 mb-2" htmlFor="start-time">
               Start Time (24-hour)
             </label>
-            <input
-              type="text"
+            <TimePicker
               id="start-time"
               value={startTime}
-              onChange={(e) => handleTimeChange(setStartTime, e.target.value)}
-              placeholder="HH:MM (e.g. 09:00)"
-              className="input w-full text-black font-medium"
-              pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]"
-              title="Please enter a valid 24-hour time format (HH:MM)"
+              onChange={(value) => handleTimeChange(setStartTime, value)}
+              format="HH:mm"
+              clearIcon={null}
+              clockIcon={null}
+              disableClock={true}
+              className="w-full time-picker"
             />
           </div>
           
@@ -219,15 +228,15 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
             <label className="block text-gray-700 mb-2" htmlFor="end-time">
               End Time (24-hour)
             </label>
-            <input
-              type="text"
+            <TimePicker
               id="end-time"
               value={endTime}
-              onChange={(e) => handleTimeChange(setEndTime, e.target.value)}
-              placeholder="HH:MM (e.g. 11:00)"
-              className="input w-full text-black font-medium"
-              pattern="([01]?[0-9]|2[0-3]):[0-5][0-9]"
-              title="Please enter a valid 24-hour time format (HH:MM)"
+              onChange={(value) => handleTimeChange(setEndTime, value)}
+              format="HH:mm"
+              clearIcon={null}
+              clockIcon={null}
+              disableClock={true}
+              className="w-full time-picker"
             />
           </div>
         </div>

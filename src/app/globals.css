@@ -37,6 +37,27 @@ body {
   }
 }
 
+/* 時間選擇器樣式 */
+.time-picker {
+  height: 38px;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+.time-picker .react-time-picker__wrapper {
+  border: none;
+}
+
+.time-picker .react-time-picker__inputGroup {
+  padding: 0 0.75rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  color: black;
+  font-weight: 500;
+}
+
 @keyframes pulse-fast {
   0%, 100% {
     opacity: 1;
