@@ -221,15 +221,6 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
         <h3 className="font-bold text-lg mb-2 text-ulc-blue">Other Details</h3>
         
         <div className="grid grid-cols-2 gap-2 mb-3">
-          {examInfo.todayDate && (
-            <>
-              <div className="text-gray-600">Date today:</div>
-              <div className="text-black font-medium">
-                {formatDate(examInfo.todayDate)}
-              </div>
-            </>
-          )}
-          
           <div className="text-gray-600">Classroom:</div>
           <div className="text-black font-medium">{examInfo.classroom || "Not specified"}</div>
         </div>
@@ -298,23 +289,23 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
       {showReportModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-lg w-full">
-            <h3 className="text-xl font-bold mb-4 text-ulc-blue">Report an Event</h3>
+            <h3 className="text-xl font-bold mb-4 text-black">Report an Event</h3>
             <textarea
               value={reportDescription}
               onChange={(e) => setReportDescription(e.target.value)}
-              className="w-full h-32 p-2 border rounded mb-4"
+              className="w-full h-32 p-2 border rounded mb-4 text-black"
               placeholder="Describe what happened..."
             ></textarea>
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setShowReportModal(false)}
-                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                className="px-4 py-2 bg-gray-300 text-black rounded hover:bg-gray-400"
               >
                 Cancel
               </button>
               <button
                 onClick={addEvent}
-                className="px-4 py-2 bg-ulc-blue text-white rounded hover:bg-blue-700"
+                className="px-4 py-2 bg-ulc-blue text-black rounded hover:bg-blue-700"
               >
                 Save Report
               </button>
