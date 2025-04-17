@@ -192,7 +192,7 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
       
       {isExamEnded ? (
         <div className="p-8 bg-red-50 rounded-lg border-2 border-red-500 text-center mb-6 animate-pulse">
-          <span className="text-4xl font-bold text-red-600">考試已結束</span>
+          <span className="text-4xl font-bold text-red-600">The exam has ended.</span>
         </div>
       ) : (
         <div className="grid grid-cols-4 gap-4 text-center mb-6">
