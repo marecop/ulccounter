@@ -12,7 +12,8 @@ module.exports = {
         secondary: '#64748b',
         accent: '#f97316',
         warning: '#f59e0b',
-        'ulc-blue': '#1e3a70', // ULC 蓝色
+        'ulc-blue': '#284e95', // 修改為 #284e95
+        'bg-main': '#284e95', // 新增背景色
       },
       animation: {
         'pulse-fast': 'pulse 1s linear infinite',

@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
-import TimePicker from 'react-ios-time-picker';
 import 'react-datepicker/dist/react-datepicker.css';
-import 'react-time-picker/dist/TimePicker.css';
-import 'react-clock/dist/Clock.css';
 import { ExamBoard, ExamInfo, Subject, Teacher } from '@/types';
 import { subjects, centreNumbers } from '@/data/subjects';
+import CustomTimePicker from './CustomTimePicker';
 
 interface ExamFormProps {
   onSubmit: (examInfo: ExamInfo) => void;
@@ -22,7 +20,6 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
   const [endTime, setEndTime] = useState(initialData?.endTime || '11:00');
   const [customVenue, setCustomVenue] = useState(initialData?.venue || '');
   const [showAdditionalSettings, setShowAdditionalSettings] = useState(!!initialData);
-  const [studentName, setStudentName] = useState(initialData?.studentName || '');
   
   // 額外設置
   const [classroom, setClassroom] = useState(initialData?.classroom || '');
@@ -57,7 +54,7 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
   };
 
   const handleTimeChange = (setter: React.Dispatch<React.SetStateAction<string>>, value: string) => {
-    // 直接設置值，允許用戶輸入
+    // 直接設置值
     setter(value);
   };
 
@@ -99,30 +96,15 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
       classroom: classroom === 'custom' ? customClassroomValue : classroom,
       teachers,
       todayDate: new Date(), // 自動使用當前日期
-      attendanceFile,
-      studentName
+      attendanceFile
     });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-6 mb-8">
+    <form id="exam-form" onSubmit={handleSubmit} className="bg-white rounded-lg shadow-lg p-6 mb-8">
       <h2 className="text-2xl font-bold mb-6 text-center text-ulc-blue">Exam Setup</h2>
       
       <div className="grid gap-4 mb-6">
-        <div>
-          <label className="block text-gray-700 mb-2" htmlFor="student-name">
-            Student Name
-          </label>
-          <input
-            type="text"
-            id="student-name"
-            value={studentName}
-            onChange={(e) => setStudentName(e.target.value)}
-            className="input w-full text-black font-medium"
-            placeholder="Enter student name"
-          />
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-gray-700 mb-2" htmlFor="board">
@@ -145,7 +127,7 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
             </label>
             <div className="flex gap-2 items-center">
               <div className="bg-gray-200 px-3 py-2 rounded-md text-gray-700">
-                {board === 'Cambridge' ? 'CAIE:' : 'Edexcel:'}
+                {board === 'Cambridge' ? 'CIE:' : 'Edexcel:'}
               </div>
               <input
                 type="text"
@@ -214,16 +196,10 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
             <label className="block text-gray-700 mb-2" htmlFor="start-time">
               Start Time (24-hour)
             </label>
-            <TimePicker
+            <CustomTimePicker
               value={startTime}
               onChange={(value) => handleTimeChange(setStartTime, value)}
-              use24hours={true}
-              placeholder="Select start time"
-              cellHeight={35}
-              fontSize={16}
-              pickerDefaultValue={startTime}
-              cancelButtonText="Cancel"
-              doneButtonText="Done"
+              className="w-full"
             />
           </div>
           
@@ -231,16 +207,10 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
             <label className="block text-gray-700 mb-2" htmlFor="end-time">
               End Time (24-hour)
             </label>
-            <TimePicker
+            <CustomTimePicker
               value={endTime}
               onChange={(value) => handleTimeChange(setEndTime, value)}
-              use24hours={true}
-              placeholder="Select end time"
-              cellHeight={35}
-              fontSize={16}
-              pickerDefaultValue={endTime}
-              cancelButtonText="Cancel"
-              doneButtonText="Done"
+              className="w-full"
             />
           </div>
         </div>
@@ -381,10 +351,10 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
         )}
       </div>
       
-      <div className="text-center">
+      <div className="mt-6 text-center">
         <button
           type="submit"
-          className="btn btn-primary px-8 py-3 text-lg"
+          className="btn bg-ulc-blue text-white hover:bg-blue-700 px-6 py-2 rounded-md shadow-md"
         >
           Start Timer
         </button>

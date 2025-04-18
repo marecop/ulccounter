@@ -176,7 +176,7 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
       </audio>
       
       <div className="flex justify-between items-center mb-4">
-        <h2 className={`text-2xl font-bold ${isExamEnded ? 'text-red-600 text-4xl animate-bounce' : 'text-ulc-blue'}`}>{getTimerMessage()}</h2>
+        <h2 className={`text-2xl font-bold ${isExamEnded ? 'text-red-600 text-4xl animate-bounce' : 'text-bg-main'}`}>{getTimerMessage()}</h2>
         <div className="flex gap-2">
           <button 
             onClick={() => setShowReportModal(true)}
@@ -186,7 +186,7 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
           </button>
           <button 
             onClick={onEdit}
-            className="px-3 py-1 bg-ulc-blue text-white rounded hover:bg-blue-700"
+            className="px-3 py-1 bg-bg-main text-white rounded hover:bg-blue-700"
           >
             Edit
           </button>

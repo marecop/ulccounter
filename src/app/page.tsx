@@ -31,8 +31,8 @@ export default function Home() {
             priority
           />
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-ulc-blue">ULC Exam Countdown Timer</h1>
-        <p className="text-gray-600">Set up your exam details and keep track of time</p>
+        <h1 className="text-3xl md:text-4xl font-bold mb-2 text-white">ULC Exam Countdown Timer</h1>
+        <p className="text-white">Set up your exam details and keep track of time</p>
       </header>
 
       {examInfo && !isEditing ? (
@@ -41,7 +41,7 @@ export default function Home() {
           <div className="mt-6 text-center">
             <button
               onClick={() => setExamInfo(null)}
-              className="btn bg-ulc-blue text-white hover:bg-blue-800"
+              className="btn bg-ulc-blue text-white hover:bg-blue-700 px-6 py-2 rounded-md shadow-md"
             >
               Set Up New Exam
             </button>
@@ -54,7 +54,7 @@ export default function Home() {
         />
       )}
       
-      <footer className="mt-12 text-center text-gray-500 text-sm">
+      <footer className="mt-12 text-center text-white text-sm">
         <p>Copyright © 2025 Huang Zhangjun</p>
         <p className="mt-1">If anything went wrong, contact zhahuang2868@ulinkcollege.com</p>
       </footer>

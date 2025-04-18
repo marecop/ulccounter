@@ -3,21 +3,21 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 40, 78, 149; /* #284e95 */
+  --background-end-rgb: 40, 78, 149; /* #284e95 */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-start-rgb: 40, 78, 149; /* #284e95 */
+    --background-end-rgb: 40, 78, 149; /* #284e95 */
   }
 }
 
 body {
-  @apply bg-gray-100;
+  @apply bg-bg-main;
   color: rgb(var(--foreground-rgb));
 }
 
@@ -27,20 +27,30 @@ body {
   }
   
   .btn-primary {
-    @apply bg-ulc-blue text-white hover:bg-blue-800;
+    @apply bg-white text-bg-main hover:bg-gray-100;
   }
   
   .input {
-    @apply px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent;
   }
   
   .select {
-    @apply px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+    @apply px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent;
   }
 }
 
 button {
   @apply transition-colors duration-150;
+}
+
+/* 自定義時間選擇器樣式 */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
 }
 
 /* 動畫 */
@@ -72,18 +82,24 @@ button {
   animation: bounce 1s infinite;
 }
 
-/* iOS 風格時間選擇器樣式 */
-.react-ios-time-picker-container {
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+/* 自定義時間選擇器額外樣式 */
+.custom-time-picker {
+  border-radius: 0.375rem;
+  overflow: hidden;
 }
 
-.react-ios-time-picker-selected-option {
-  color: #1d4ed8 !important;
-  font-weight: 600 !important;
+.custom-time-picker select {
+  padding: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+  background-color: #fff;
+  color: #111827;
 }
 
-.react-ios-time-picker-btn-container button {
-  color: #1d4ed8 !important;
-  font-weight: 500 !important;
+.custom-time-picker select:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 } 
