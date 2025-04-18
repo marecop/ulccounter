@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import DatePicker from 'react-datepicker';
-import TimePicker from 'react-time-picker';
+import TimePicker from 'react-ios-time-picker';
 import 'react-datepicker/dist/react-datepicker.css';
 import 'react-time-picker/dist/TimePicker.css';
 import 'react-clock/dist/Clock.css';
@@ -22,6 +22,7 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
   const [endTime, setEndTime] = useState(initialData?.endTime || '11:00');
   const [customVenue, setCustomVenue] = useState(initialData?.venue || '');
   const [showAdditionalSettings, setShowAdditionalSettings] = useState(!!initialData);
+  const [studentName, setStudentName] = useState(initialData?.studentName || '');
   
   // 額外設置
   const [classroom, setClassroom] = useState(initialData?.classroom || '');
@@ -55,23 +56,9 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
     }
   };
 
-  const handleTimeChange = (setter: React.Dispatch<React.SetStateAction<string>>, value: string | null) => {
-    // 如果值為 null，則使用默認值
-    if (value === null) {
-      setter('09:00');
-      return;
-    }
-    
+  const handleTimeChange = (setter: React.Dispatch<React.SetStateAction<string>>, value: string) => {
     // 直接設置值，允許用戶輸入
     setter(value);
-    
-    // 如果值符合格式要求，則標準化格式
-    const timeRegex = /^([01]?[0-9]|2[0-3]):([0-5][0-9])$/;
-    if (timeRegex.test(value)) {
-      // 標準化格式為 HH:MM
-      const [hours, minutes] = value.split(':').map(Number);
-      setter(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`);
-    }
   };
 
   const addTeacher = () => {
@@ -112,7 +99,8 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
       classroom: classroom === 'custom' ? customClassroomValue : classroom,
       teachers,
       todayDate: new Date(), // 自動使用當前日期
-      attendanceFile
+      attendanceFile,
+      studentName
     });
   };
 
@@ -121,6 +109,20 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
       <h2 className="text-2xl font-bold mb-6 text-center text-ulc-blue">Exam Setup</h2>
       
       <div className="grid gap-4 mb-6">
+        <div>
+          <label className="block text-gray-700 mb-2" htmlFor="student-name">
+            Student Name
+          </label>
+          <input
+            type="text"
+            id="student-name"
+            value={studentName}
+            onChange={(e) => setStudentName(e.target.value)}
+            className="input w-full text-black font-medium"
+            placeholder="Enter student name"
+          />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="block text-gray-700 mb-2" htmlFor="board">
@@ -213,14 +215,15 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
               Start Time (24-hour)
             </label>
             <TimePicker
-              id="start-time"
               value={startTime}
               onChange={(value) => handleTimeChange(setStartTime, value)}
-              format="HH:mm"
-              clearIcon={null}
-              clockIcon={null}
-              disableClock={true}
-              className="w-full time-picker"
+              use24hours={true}
+              placeholder="Select start time"
+              cellHeight={35}
+              fontSize={16}
+              pickerDefaultValue={startTime}
+              cancelButtonText="Cancel"
+              doneButtonText="Done"
             />
           </div>
           
@@ -229,14 +232,15 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
               End Time (24-hour)
             </label>
             <TimePicker
-              id="end-time"
               value={endTime}
               onChange={(value) => handleTimeChange(setEndTime, value)}
-              format="HH:mm"
-              clearIcon={null}
-              clockIcon={null}
-              disableClock={true}
-              className="w-full time-picker"
+              use24hours={true}
+              placeholder="Select end time"
+              cellHeight={35}
+              fontSize={16}
+              pickerDefaultValue={endTime}
+              cancelButtonText="Cancel"
+              doneButtonText="Done"
             />
           </div>
         </div>

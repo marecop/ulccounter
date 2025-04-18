@@ -31,4 +31,5 @@ export interface ExamInfo {
   teachers?: Teacher[];
   todayDate?: Date;
   attendanceFile?: File | null;
+  studentName?: string;
 } 

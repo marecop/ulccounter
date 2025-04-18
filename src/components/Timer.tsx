@@ -21,6 +21,7 @@ interface TimeLeft {
 interface ReportEvent {
   time: string;
   description: string;
+  studentName?: string;
 }
 
 export default function Timer({ examInfo, onEdit }: TimerProps) {
@@ -32,6 +33,7 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportDescription, setReportDescription] = useState('');
   const [showEvents, setShowEvents] = useState(false);
+  const [reportStudentName, setReportStudentName] = useState(examInfo.studentName || '');
   
   // 用於播放音頻的參考
   const audioRef = useRef<HTMLAudioElement>(null);
@@ -141,9 +143,9 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
   const formatDate = (date: Date): string => {
     const options: Intl.DateTimeFormatOptions = {
       weekday: 'long',
-      day: '2-digit',
-      month: '2-digit',
-      year: '2-digit'
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
     };
     return date.toLocaleDateString('en-GB', options);
   };
@@ -156,7 +158,8 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
     
     const newEvent: ReportEvent = {
       time: timeString,
-      description: reportDescription.trim()
+      description: reportDescription.trim(),
+      studentName: reportStudentName.trim() || examInfo.studentName || ''
     };
     
     setEvents([...events, newEvent]);
@@ -220,6 +223,15 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
           <span className="text-xl">The exam is under five minutes remaining.</span>
         </div>
       )}
+      
+      <div className="p-3 bg-blue-50 border border-blue-200 rounded mb-4">
+        <div className="text-center font-medium">
+          <div className="text-ulc-blue text-lg mb-1">{formatDate(examInfo.date)}</div>
+          {examInfo.studentName && (
+            <div className="text-gray-700">Student: {examInfo.studentName}</div>
+          )}
+        </div>
+      </div>
       
       <div className="bg-gray-100 p-4 rounded-md mb-4">
         <h3 className="font-bold text-lg mb-2 text-ulc-blue">Exam Details</h3>
@@ -303,6 +315,9 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
                 {events.map((event, index) => (
                   <div key={index} className="border-b pb-2">
                     <div className="text-gray-600">{event.time}</div>
+                    {event.studentName && (
+                      <div className="text-gray-800 font-medium">Student: {event.studentName}</div>
+                    )}
                     <div className="text-black">{event.description}</div>
                   </div>
                 ))}
@@ -317,6 +332,21 @@ export default function Timer({ examInfo, onEdit }: TimerProps) {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-lg w-full">
             <h3 className="text-xl font-bold mb-4 text-black">Report an Event</h3>
+            
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2" htmlFor="student-name">
+                Student Name
+              </label>
+              <input
+                type="text"
+                id="student-name"
+                value={reportStudentName}
+                onChange={(e) => setReportStudentName(e.target.value)}
+                className="w-full p-2 border rounded text-black font-medium"
+                placeholder="Enter student name"
+              />
+            </div>
+            
             <textarea
               value={reportDescription}
               onChange={(e) => setReportDescription(e.target.value)}
