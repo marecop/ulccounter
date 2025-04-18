@@ -200,7 +200,7 @@ export default function ExamForm({ onSubmit, initialData }: ExamFormProps) {
             selected={date}
             onChange={(date: Date) => setDate(date)}
             className="input w-full text-black font-medium"
-            dateFormat="EEEE, MMMM d, yyyy"
+            dateFormat="EEEE, d MMMM yyyy"
             showWeekNumbers
             calendarClassName="bg-white shadow-lg rounded-md p-2"
             inline={false}
